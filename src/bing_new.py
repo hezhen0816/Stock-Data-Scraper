@@ -75,15 +75,24 @@ def bing_scrape_stock_news(keyword, output_dir, max_pages=2, sleep_sec=2):
     for page in range(max_pages):
         offset = page * 10
         url = f"https://www.bing.com/news/search?q={keyword}&qft=interval%3d%228%22&first={offset+1}"
-        headers = {"User-Agent": "Mozilla/5.0"}
-        resp = requests.get(url, headers=headers)
-        if resp.status_code != 200:
-            print(f"Failed to retrieve page {page+1}, status code: {resp.status_code}")
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+        }
+        try:
+            resp = requests.get(url, headers=headers, timeout=15)
+            resp.raise_for_status()
+        except Exception as e:
+            logging.error(f"Bing 第 {page+1} 頁下載失敗: {e}")
+            time.sleep(sleep_sec)
+            continue
         soup = BeautifulSoup(resp.text, "lxml")
         news_cards = soup.find_all("a", {"class": "title"})
         for a in news_cards:
             title = a.get_text(strip=True)
             link = a.get("href")
+            if not link:
+                continue
             content = get_full_article_content(link)
             publish_date = ""
             # 1. 從 a 元素往上一層找到父 div
