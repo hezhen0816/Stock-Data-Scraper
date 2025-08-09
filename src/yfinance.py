@@ -1,8 +1,10 @@
-import pandas as pd
-import os
-from Indicator import apply_technical_indicators
 import logging
+import os
+
+import pandas as pd
 import yfinance as yf
+
+from Indicator import apply_technical_indicators
 # --------------------------------------------------
 # 一、yfinance 抓取函式
 # --------------------------------------------------
@@ -49,7 +51,7 @@ def yfinance_data(stock_id, output_dir):
             # --- MODIFICATION START ---
             # 對於 intraday 資料，需要按 Interval 分組計算指標，並保持期望的順序
 
-            temp_processed_dfs = {} # 用字典暫存處理好的 DataFrame，以 interval 字串為鍵
+            temp_processed_dfs = {}  # 用字典暫存處理好的 DataFrame，以 interval 字串為鍵
 
             # 1. 先對每個 interval 的資料計算指標
             #    groupby 預設會對鍵進行排序 (所以 interval_value 的順序可能是 '15m', '30m', '5m', '60m')
@@ -60,7 +62,7 @@ def yfinance_data(stock_id, output_dir):
             # 2. 按照期望的順序重新組合
             processed_intraday_dfs_ordered = []
             # 這個順序應該和 get_yfinance_data 中定義的 intervals 順序一致
-            desired_interval_order = ["5m", "15m", "30m", "60m"] 
+            desired_interval_order = ["5m", "15m", "30m", "60m"]
 
             for iv_desired in desired_interval_order:
                 if iv_desired in temp_processed_dfs: # 確保該 interval 的資料存在
@@ -72,23 +74,23 @@ def yfinance_data(stock_id, output_dir):
             else:
                 # 如果沒有任何 intraday 資料被處理 (例如 temp_processed_dfs 為空或所有 desired_interval_order 都不在其中)
                 # 則 df_ind 為空的 DataFrame，避免後續 to_csv 出錯
-                df_ind = pd.DataFrame() 
+                df_ind = pd.DataFrame()
             # --- MODIFICATION END ---
         else:
             # 對於 'daily' 和 '1m_7d'，它們本身就是單一時間頻率，可以直接計算
             df_ind = apply_technical_indicators(df.copy())
 
         # 輸出 CSV 檔，採用 UTF-8 編碼並加上 BOM
-        if not df_ind.empty: # 確保 df_ind 不是空的才進行儲存
+    if not df_ind.empty:  # 確保 df_ind 不是空的才進行儲存
             file_name = f"yfinance_{stock_id}_{label}.csv"
             os.makedirs(output_dir, exist_ok=True)
             df_ind.to_csv(os.path.join(output_dir, file_name), encoding='utf-8-sig')
             
             logging.info(f"已輸出 {file_name} 共 {len(df_ind)} 筆資料")
 
-        elif label == 'intraday' and not processed_intraday_dfs_ordered: # 針對 intraday 特殊情況給予提示
+    elif label == 'intraday' and not processed_intraday_dfs_ordered:  # 針對 intraday 特殊情況給予提示
             logging.error(f"警告：沒有為 {label} ({stock_id}) 產生有效的資料進行輸出。")
-#測試
+# 測試
 if __name__ == "__main__":
     # 測試用的主程式
     stock_id = "3379"  # 台積電

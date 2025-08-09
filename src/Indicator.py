@@ -5,7 +5,6 @@ import pandas as pd  # 資料處理套件
 # 三、技術指標計算函式
 #    - MA, RSI, MACD, HV, BB, ATR, OBV, VWAP, Divergence
 # --------------------------------------------------
-
 def calculate_rsi(series, period=14):
     """
     計算 RSI（相對強弱指標）
@@ -23,7 +22,6 @@ def calculate_rsi(series, period=14):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-
 def calculate_macd(series, fast=12, slow=26, signal=9):
     """
     計算 MACD 線、訊號線與柱狀圖
@@ -40,7 +38,6 @@ def calculate_macd(series, fast=12, slow=26, signal=9):
     hist = macd_line - signal_line  # 柱狀圖
     return macd_line, signal_line, hist
 
-
 def calculate_hv(series, window=20, trading_days=252):
     """
     計算歷史波動率（HV）
@@ -52,7 +49,6 @@ def calculate_hv(series, window=20, trading_days=252):
     log_ret = np.log(series / series.shift(1))  # 日對數報酬
     # 標準差 * 根號年交易天數
     return log_ret.rolling(window).std() * np.sqrt(trading_days)
-
 
 def calculate_bollinger(series, window=20, num_std=2):
     """
@@ -67,7 +63,6 @@ def calculate_bollinger(series, window=20, num_std=2):
     upper = ma + num_std * std
     lower = ma - num_std * std
     return ma, upper, lower
-
 
 def calculate_atr(df, period=14):
     """
@@ -85,7 +80,6 @@ def calculate_atr(df, period=14):
     tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
     atr = tr.rolling(period).mean()
     return atr
-
 
 def calculate_obv(df):
     """
@@ -105,7 +99,6 @@ def calculate_obv(df):
             obv.append(obv[-1])
     return pd.Series(obv, index=df.index)
 
-
 def calculate_vwap(df):
     """
     計算成交量加權平均價（VWAP）
@@ -117,7 +110,6 @@ def calculate_vwap(df):
     cum_vp = (price * vol).cumsum()  # 價量累積
     cum_v = vol.cumsum()  # 量累積
     return cum_vp / cum_v
-
 
 def detect_divergence(df, window=20):
     """
@@ -132,7 +124,6 @@ def detect_divergence(df, window=20):
     oh = obv.rolling(window).max().shift(1)
     # 價格突破前高且 OBV 未突破 = 背離
     return (price > ph) & (obv < oh)
-
 
 def apply_technical_indicators(df):
     """

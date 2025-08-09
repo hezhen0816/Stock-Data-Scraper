@@ -1,11 +1,12 @@
-from finmind import finmind_data
-from yfinance import yfinance_data
-from bing_new import bing_scrape_stock_news
 from datetime import datetime, timedelta
-from tqdm import tqdm
-import shutil
-import os
 import logging
+import os
+import shutil
+
+from bing_new import bing_scrape_stock_news
+from finmind import finmind_data
+from tqdm import tqdm
+from yfinance import yfinance_data
 
 # 1. 建立 logger
 logger = logging.getLogger()
@@ -27,6 +28,7 @@ console_handler.setFormatter(console_formatter)
 # 只讓 INFO 等級印到 console，其它不印
 def filter_info(record):
     return record.levelno == logging.INFO
+
 console_handler.addFilter(filter_info)
 
 logger.addHandler(console_handler)
@@ -37,7 +39,8 @@ if __name__ == '__main__':
     import tkinter as tk
     from tkinter import ttk
     from pathlib import Path
-    #pathlib > os.path：可讀性高、跨平台一致
+
+    # pathlib > os.path：可讀性高、跨平台一致
     BASE_DIR = Path(__file__).resolve().parent
     PARENT_DIR = BASE_DIR.parent
     STOCKS_PATH = PARENT_DIR / "stocks.txt"
@@ -69,20 +72,16 @@ if __name__ == '__main__':
         base_dir = r".\data"
         one_year_ago = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
         finmind_token = None
-        
 
-        for stock_str in tqdm(stocks, desc="股票處理進度", ):
+        for stock_str in tqdm(stocks, desc="股票處理進度"):
             stock_id, stock_name = stock_str.split("_", 1)
             tqdm.write(f"正在處理：{stock_id} {stock_name}")
             sub_dir = os.path.join(base_dir, f"{stock_id}_{stock_name}")
             os.makedirs(sub_dir, exist_ok=True)
-        
-
 
             yfinance_data(
                 stock_id=stock_id,
                 output_dir=sub_dir,
-                
             )
             finmind_data(
                 stock_id=stock_id,
@@ -112,8 +111,6 @@ if __name__ == '__main__':
             logging.info(f"[Info] 完成壓縮：{zip_path}.zip")
 
         logging.info("全部股票處理完成")
-
-    pass
 
     ttk.Button(root, text="確定", command=on_ok).pack()
     root.mainloop()

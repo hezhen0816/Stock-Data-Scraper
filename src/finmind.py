@@ -1,7 +1,8 @@
-import requests  # HTTP 請求套件，用於呼叫 API
-import pandas as pd  # 資料處理套件
 import logging
 import os
+
+import pandas as pd  # 資料處理套件
+import requests  # HTTP 請求套件，用於呼叫 API
 # --------------------------------------------------
 # 一、FinMind API 抓取函式
 # --------------------------------------------------
@@ -33,7 +34,7 @@ def get_finmind_data(dataset, data_id=None, start_date=None, token=None):
         return pd.DataFrame()
 
 
-def finmind_data (stock_id, one_year_ago, finmind_token, output_dir):
+def finmind_data(stock_id, one_year_ago, finmind_token, output_dir):
 # --------------------------------------------------
 # 二、取得 FinMind API 資料(法人、財務、新聞資料)
 # --------------------------------------------------  
@@ -56,10 +57,10 @@ def finmind_data (stock_id, one_year_ago, finmind_token, output_dir):
         if df_fm.empty:
             continue
         # 輸出 FinMind 資料
-        file_name = f"FinMind_{item['dataset']}_{item.get('data_id','')}.csv"
-        os.makedirs(output_dir, exist_ok=True)
-        df_fm.to_csv(os.path.join(output_dir, file_name), encoding='utf-8-sig')
-        logging.info(f"已輸出 {file_name} 共 {len(df_fm)} 筆資料")
+    file_name = f"FinMind_{item['dataset']}_{item.get('data_id', '')}.csv"
+    os.makedirs(output_dir, exist_ok=True)
+    df_fm.to_csv(os.path.join(output_dir, file_name), encoding='utf-8-sig')
+    logging.info(f"已輸出 {file_name} 共 {len(df_fm)} 筆資料")
 
 
 

@@ -1,12 +1,13 @@
+import logging
 import os
 import time
 from urllib.parse import urlparse
+
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 from GoogleNews import GoogleNews
+from bs4 import BeautifulSoup
 from newspaper import Article
-import logging
 
 
 def get_full_article_content(url, timeout=10):
@@ -155,7 +156,7 @@ def google_scrape_stock_news(
             })
 
 
-        time.sleep(sleep_interval)
+    time.sleep(sleep_interval)
 
     df = pd.DataFrame(records)
 

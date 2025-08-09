@@ -1,11 +1,12 @@
+import logging
+import os
+import time
+from urllib.parse import urlparse
+
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-import time
-import logging
-from urllib.parse import urlparse
 from newspaper import Article
-import os
 
 def get_full_article_content(url, timeout=10):
     try:
@@ -111,7 +112,7 @@ def bing_scrape_stock_news(keyword, output_dir, max_pages=2, sleep_sec=2):
     os.makedirs(output_dir, exist_ok=True)
     df.to_csv(os.path.join(output_dir, output_file), index=False, encoding='utf-8-sig')
     logging.info(f"共 {len(df)} 筆")
-    #print(df)
+    # print(df)
 
 
 if __name__ == "__main__":
