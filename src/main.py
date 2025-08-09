@@ -4,11 +4,12 @@ import os
 import shutil
 from pathlib import Path
 import argparse
+import traceback
 
 from bing_new import bing_scrape_stock_news
 from finmind import finmind_data
 from tqdm import tqdm
-from yfinance import yfinance_data
+from yf_client import yfinance_data
 
 
 def setup_logger(log_path: Path) -> logging.Logger:
@@ -25,16 +26,11 @@ def setup_logger(log_path: Path) -> logging.Logger:
     file_formatter = logging.Formatter('[%(levelname)s] %(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
-    # 終端機 Handler：只顯示 INFO
+    # 終端機 Handler：顯示 INFO 與以上（包含 WARNING/ERROR）
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_formatter = logging.Formatter('[%(levelname)s] %(message)s')
     console_handler.setFormatter(console_formatter)
-
-    def filter_info(record):
-        return record.levelno == logging.INFO
-
-    console_handler.addFilter(filter_info)
     logger.addHandler(console_handler)
     return logger
 
@@ -82,6 +78,7 @@ def run_pipeline(stocks: list[str], data_dir: Path, finmind_token: str | None, m
                 logging.info(f"[Info] 完成壓縮：{zip_path}.zip")
         except Exception as e:
             logging.error(f"處理 {stock_str} 失敗: {e}")
+            logging.error(traceback.format_exc())
 
 
 if __name__ == '__main__':
